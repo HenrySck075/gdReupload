@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <title>GD Level Reuploader (and it's a web)</title>
+    </head>
+    <style>
+        #a:hover {cursor: pointer}
+        html {background-color: #282C34;}
+        label {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            font-size: 20px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        p {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            color: white;
+            font-size: 20px;
+        }
+        input {
+            border: 0;
+            background-color: transparent;
+            text-align: center;
+            font-size: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        input.checkbox {
+            width: 17px;
+            height: 17px;
+        }
+        #button:hover{
+            cursor:pointer
+        }
+    </style>
+    <script>
+        function $(selector) {return document.querySelector(selector)} //trollskullirl
+        function isNumeric(str) {
+            return !isNaN(str) && !isNaN(parseFloat(str))
+        }
+        async function darkness() {
+            let target = [$("#targetGDPS").value, $("#targetUser").value, $("#targetPass").value]
+            let dest = [$("#destGDPS").value, $("#destUser").value, $("#destPass").value]
+            let levelId = $("#levelId").value
+            let uploadConfig = {unlisted: $("#unlist").checked, songId: isNumeric($("#songId").value) ? + $("#songId").value : 0}
+
+            if (target[0] === dest[0]) {$("#status").innerHTML = "you gotta be trolling"; return}
+
+            let resp = await fetch("/reupload", {body: JSON.stringify({"target": target, "dest": dest, "levelId": levelId, "config": uploadConfig}), method: "POST", headers:{"Content-Type": "application/json"}})
+            $("#status").innerText = await resp.json().error ? await (resp.json()).body.reason : await (resp.json()).body.resp
+        }
+        addEventListener("DOMContentLoaded", () => {
+            let a = document.getElementById("config")
+            console.log(a)
+            for (let i of a.children) {
+                i.style.marginLeft = "5px"
+                i.style.marginRight = "5px"
+            }
+        })
+    </script>
+    <datalist id="gdps">
+        <option value="Geometry Dash"></option>
+        <option value="GDPS Editor 2.2"></option>
+        <option value="2.2 Unlocked"></option>
+        <option value="1.9 GDPS"></option>
+    </datalist>
+    <body>
+        <p style="font-size: 40px">GD Level Reuploader</p>
+        <p id="a" onclick="location.href = '/pyscript'" ontouchstart="location.href = '/pyscript'">pyscript version for some reason</p>
+        <div style="display: flex; justify-content: center;">
+            <div style="display: flex; justify-content: center; flex-wrap: wrap; width: 300px;">
+                <input list="gdps" id="targetGDPS" placeholder="Target" style="border:20px"><br/>
+                <input type="text" id="targetUser" placeholder="Username"/>
+                <input type="text" id="targetPass" placeholder="Password"/>
+            </div>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap; width: 300px;">
+                <input type="number" min=1 id="levelId" placeholder="Reupload Level ID"/>
+                <input type="button" id="button" onclick="darkness()" value="Reupload"/>
+            </div>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap; width: 300px;">
+                <input list="gdps" id="destGDPS" placeholder="Destination" style="border:20px"><br/>
+                <input type="text" id="destUser" placeholder="Username"/>
+                <input type="text" id="destPass" placeholder="Password"/>
+            </div>
+        </div>
+        <br/>
+        <p>Reupload Configurations:</p>
+        <div style="display: flex; justify-content: center;" id="config">
+            <label for="unlist">Unlist level on upload</label>
+            <input type="checkbox" class="checkbox" name="unlist" id="unlist">
+            <br/>
+            <input type="number" placeholder="Song ID (leave blank to use reup)" id="songId" style="width:310px">
+        </div>
+        <p id="status"></p>
+    </body>
+</html>
