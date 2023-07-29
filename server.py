@@ -48,7 +48,7 @@ def resp2json(resp, fields=[]):
         ret[k] = v
     return ret
 
-def generate_chk(values: List[int, str] = [], key: str = "", salt: str = "") -> str:
+def generate_chk(values: List[int | str] = [], key: str = "", salt: str = "") -> str:
     values.append(salt)
     string = ("").join(map(str, values))  # assure "str" type and connect values
     hashed = hashlib.sha1(string.encode()).hexdigest()
