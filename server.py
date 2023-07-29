@@ -2,7 +2,7 @@ import base64,itertools,hashlib,traceback,random
 from flask import Flask, request, render_template_string, make_response
 import requests, re, json, sys
 from string import ascii_letters, digits
-from typing import List
+from typing import List, Union
 
 possible_letters = ascii_letters + digits
 a = Flask(__name__)
@@ -48,7 +48,7 @@ def resp2json(resp, fields=[]):
         ret[k] = v
     return ret
 
-def generate_chk(values: List[int | str] = [], key: str = "", salt: str = "") -> str:
+def generate_chk(values: List[Union[int,str]] = [], key: str = "", salt: str = "") -> str:
     values.append(salt)
     string = ("").join(map(str, values))  # assure "str" type and connect values
     hashed = hashlib.sha1(string.encode()).hexdigest()
