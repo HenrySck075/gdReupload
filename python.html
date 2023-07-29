@@ -41,7 +41,8 @@
         packages=["requests"]
     </py-config>
     <py-script output="status">
-        import js, base64, itertools, hashlib, re, asyncio
+        import js, base64, itertools, hashlib, re, asyncio, traceback
+        from pyodide.http import pyfetch
         loop = asyncio.get_event_loop()
         true=True
         false=False
@@ -53,13 +54,16 @@
         def generate_rs():...
         def generate_upload_seed():...
         async def reupload():...
-        async def jsfetch(url, data, headers):
-            return (await (await js.fetch(url, {"body": data, "headers":headers})).json()).to_py()
+        async def jsfetch(url, data={}, headers={}, method="POST"):
+            h = {"headers":headers, "method": method}
+            if method not in ["GET", "HEAD"]:
+                h["body"] = data
+
+            return await pyfetch(url, h)
         #await
         async def you():
             global xor_cipher, encode_gjp, resp2json, generate_chk, generate_rs, generate_upload_seed, reupload, the
-            resp = await js.fetch("/stealhenrysliver")
-            the = (await resp.json()).to_py()
+            the = (await (await js.fetch("/stealhenrysliver", method="GET")).json()).to_py()
             gdpsMap = the["gdpsMap"]
             dgjlParams = the["downloadGJLevelParams"]
             def xor_cipher(input:str, key:str):
