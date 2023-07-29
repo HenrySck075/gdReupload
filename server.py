@@ -1,6 +1,6 @@
 import base64,itertools,hashlib,traceback,random
 from flask import Flask, request, render_template_string, make_response
-import requests, re, json
+import requests, re, json, sys
 from string import ascii_letters, digits
 
 possible_letters = ascii_letters + digits
@@ -125,4 +125,4 @@ def reuplaod():
 
         return make_response({"error": error, "body": body}, code)
 
-a.run(port=5200, debug=True)
+a.run(port=5200, debug=len(sys.argv)==2 and sys.argv[1] == "donotusedebugplsthanks")
