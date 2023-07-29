@@ -166,7 +166,7 @@
 
             if (target[0] === dest[0]) {$("#status").innerHTML = "you gotta be trolling"; return}
 
-            let resp = (await (pyscript.interpreter.globals.get('reupload'))({"target": target, "dest": dest, "levelId": levelId, "config": uploadConfig})).to_js()
+            let resp = (await (pyscript.interpreter.globals.get('reupload'))(target, dest, levelId, uploadConfig)).to_js()
             $("#status").innerText = resp.error ? resp.body.reason : resp.body.resp
         }
         addEventListener("DOMContentLoaded", () => {
