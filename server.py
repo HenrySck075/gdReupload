@@ -17,10 +17,11 @@ def r():
 
 @a.route("/pyscript")
 def rpy():
-    return render_template_string(open("./index.html","r").read())
+    return render_template_string(open("./python.html","r").read())
 
 @a.route("/stealhenrysliver")
-def getParams(): return the
+def getParams(): 
+    return the
 
 def xor_cipher(input:str, key:str):
     return ("").join(chr(ord(x) ^ ord(y)) for x, y in zip(input, itertools.cycle(key)))
