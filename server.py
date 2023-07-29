@@ -24,6 +24,9 @@ def rpy():
 def getParams(): 
     return the
 
+@a.route("what")
+def shut():
+    (request.environ.get('werkzeug.server.shutdown'))()
 def xor_cipher(input:str, key:str):
     return ("").join(chr(ord(x) ^ ord(y)) for x, y in zip(input, itertools.cycle(key)))
 
