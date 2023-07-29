@@ -127,4 +127,4 @@ def reuplaod():
         return make_response({"error": error, "body": body}, code)
 
 notdebug=not (len(sys.argv)==2 and sys.argv[1] == "donotusedebugplsthanks")
-a.run("127.0.0.1" if not notdebug else "0.0.0.0", port=5200, debug=notdebug)
+a.run("0.0.0.0", port=10000, debug=notdebug)
