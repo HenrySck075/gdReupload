@@ -1,0 +1,20 @@
+{
+    "downloadGJLevelParams":["gameVersion","binaryVersion","gdw","levelID","extras","inc","secret","udid","uuid","rs","chk","accountID"],
+    "gdpsMap": {
+        "Geometry Dash": "http://www.boomlings.com/database/",
+        "GDPS Editor 2.2": "http://game.gdpseditor.com/server/",
+        "2.2 Unlocked": "https://smjs.eu/gd/unlock/database/",
+        "1.9 GDPS": "https://absolllute.com/gdps/gdapi",
+        "XGDPS": "https",
+        "Zombie Dash": "https://zombiedashoficial.ddns.net/",
+        "1.0 GDPS": "https://onezerogdps.7m.pl/",
+        "1.4 GDPS": "https://onepoint4ps.7m.pl/",
+        "1.6 GDPS": "https://discord.gg/eGWMmyk",
+        "Aurora Dash": "https://aurorgdpsgd.7m.pl",
+        "CnekGDPS": "https://cnekgdps.7m.pl/index.html/",
+        "FloyzI GDPS": "https://discord.gg/jKRn5hy2f4",
+        "Gaym 11 GDPS": "https://discord.gg/8z7YgxNP8j",
+        "SilvrPS": "https://discord.gg/p2PStYUSGM",
+        "WGDPS": "https://www.google.com"
+      }
+}

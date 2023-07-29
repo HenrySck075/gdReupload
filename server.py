@@ -1,6 +1,6 @@
 import base64,itertools,hashlib,traceback,random
 from flask import Flask, request, render_template_string, make_response
-import requests, re
+import requests, re, json
 from string import ascii_letters, digits
 
 possible_letters = ascii_letters + digits
@@ -8,23 +8,9 @@ a = Flask(__name__)
 # bleh
 true = True
 false = False
-gdpsMap = {
-  "Geometry Dash": "http://www.boomlings.com/database/",
-  "GDPS Editor 2.2": "http://game.gdpseditor.com/server/",
-  "2.2 Unlocked": "https://smjs.eu/gd/unlock/database/",
-  "1.9 GDPS": "https://absolllute.com/gdps/gdapi",
-  "XGDPS": "https",
-  "Zombie Dash": "https://zombiedashoficial.ddns.net/",
-  "1.0 GDPS": "https://onezerogdps.7m.pl/",
-  "1.4 GDPS": "https://onepoint4ps.7m.pl/",
-  "1.6 GDPS": "https://discord.gg/eGWMmyk",
-  "Aurora Dash": "https://aurorgdpsgd.7m.pl",
-  "CnekGDPS": "https://cnekgdps.7m.pl/index.html/",
-  "FloyzI GDPS": "https://discord.gg/jKRn5hy2f4",
-  "Gaym 11 GDPS": "https://discord.gg/8z7YgxNP8j",
-  "SilvrPS": "https://discord.gg/p2PStYUSGM",
-  "WGDPS": "https://www.google.com"
-}
+the = json.load(open("me.json","r"))
+gdpsMap = the["gdpsMap"]
+dgjlParams = the["downloadGJLevelParams"]
 @a.route("/")
 def r():
     return render_template_string(open("./vocolo.html","r").read())
@@ -32,6 +18,9 @@ def r():
 @a.route("/pyscript")
 def rpy():
     return render_template_string(open("./index.html","r").read())
+
+@a.route("/stealhenrysliver")
+def getParams(): return the
 
 def xor_cipher(input:str, key:str):
     return ("").join(chr(ord(x) ^ ord(y)) for x, y in zip(input, itertools.cycle(key)))
@@ -46,7 +35,6 @@ def encode_gjp(password: str) -> str:
     return encoded_base64
 
 def resp2json(resp, fields=[]):
-    print(resp)
     resp= resp.split("#")[0] #a
     r = re.compile("[^:]+:[^:]+")
     ret = {}
@@ -56,7 +44,6 @@ def resp2json(resp, fields=[]):
         if check:
             if k not in fields: continue
         ret[k] = v
-    print(ret)
     return ret
 
 def generate_chk(values: list[int, str] = [], key: str = "", salt: str = "") -> str:
@@ -102,7 +89,8 @@ def reuplaod():
                 accId = resp2json(requests.post(gdpsMap[dest[0]]+"getGJUsers20.php", data={"secret": "Wmfd2893gb7", "str":dest[1],"total": "0", "page":"0"}, headers={"User-Agent": ""}).text, ["16"]),
                 accIdTarget = resp2json(requests.post(gdpsMap[target[0]]+"getGJUsers20.php", data={"secret": "Wmfd2893gb7", "str":target[1],"total": "0", "page":"0"}, headers={"User-Agent": ""}).text, ["16"]),
                 rs=generate_rs()
-                resp = resp2json(requests.post(gdpsMap[target[0]]+"downloadGJLevel22.php", data={"secret": "Wmfd2893gb7", "levelID": levelId, "gjp": encode_gjp(target[2]), "rs": rs, "chk": generate_chk([levelId, "1", rs, accIdTarget[0]["16"], "S1521388267807637760849071701082101002", "147699869"], "41274", "xI25fpAapCQg"), "gdw": 0}, headers={"User-Agent": ""}).text)
+                body2={"gameVersion": "21", "binaryVersion": "35","gdw":"0", "accountID":accIdTarget[0]["16"],"gjp": encode_gjp(target[2]), "uuid":"S1521388267807637760849071701082101002","udid":"147699869","levelID": levelId, "inc":"1", "extras":"0", "secret": "Wmfd2893gb7", "rs": rs, "chk": generate_chk([levelId, "1", rs, accIdTarget[0]["16"], "S1521388267807637760849071701082101002", "147699869"], "41274", "xI25fpAapCQg")}
+                resp = resp2json(requests.post(gdpsMap[target[0]]+"downloadGJLevel22.php", data={k:body2[k] for k in body2 if k in dgjlParams}, headers={"User-Agent": ""}).text)
                 upload = requests.post(gdpsMap[dest[0]]+"uploadGJLevel21.php", {
                     "gameVersion": 21,
                     "accountID": int(accId[0]["16"]),
