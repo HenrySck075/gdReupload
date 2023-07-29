@@ -37,6 +37,7 @@ def encode_gjp(password: str) -> str:
     return encoded_base64
 
 def resp2json(resp, fields=[]):
+    print(resp)
     resp= resp.split("#")[0] #a
     r = re.compile("[^:]+:[^:]+")
     ret = {}
