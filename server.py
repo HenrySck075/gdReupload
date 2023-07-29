@@ -18,7 +18,9 @@ def r():
 
 @a.route("/pyscript")
 def rpy():
-    return render_template_string(open("./python.html","r").read())
+    e=open("./python.html","r").read()
+    e=e.replace('<py-script output="status">',f'<py-script output="status">\n        baseUrl="{request.host_url}"')
+    return render_template_string(e)
 
 @a.route("/stealhenrysliver")
 def getParams(): 
