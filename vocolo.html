@@ -49,7 +49,8 @@
             if (target[0] === dest[0]) {$("#status").innerHTML = "you gotta be trolling"; return}
 
             let resp = await fetch("/reupload", {body: JSON.stringify({"target": target, "dest": dest, "levelId": levelId, "config": uploadConfig}), method: "POST", headers:{"Content-Type": "application/json"}})
-            $("#status").innerText = await resp.json().error ? await (resp.json()).body.reason : await (resp.json()).body.resp
+            let respjson = await resp.json()
+            $("#status").innerText = respjson.error ? await respjson.body.reason : await respjson.body.resp
         }
         addEventListener("DOMContentLoaded", () => {
             let a = document.getElementById("config")

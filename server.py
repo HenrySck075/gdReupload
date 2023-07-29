@@ -1,8 +1,9 @@
-import base64,itertools
-import hashlib
-import traceback
+import base64,itertools,hashlib,traceback,random
 from flask import Flask, request, render_template_string, make_response
 import requests, re
+from string import ascii_letters, digits
+
+possible_letters = ascii_letters + digits
 a = Flask(__name__)
 # bleh
 true = True
@@ -45,16 +46,17 @@ def encode_gjp(password: str) -> str:
     return encoded_base64
 
 def resp2json(resp, fields=[]):
+    print(resp)
     resp= resp.split("#")[0] #a
     r = re.compile("[^:]+:[^:]+")
     ret = {}
     check = (fields != [])
-    if check: print(resp)
     for i in r.findall(resp):
         k,v = tuple(i.split(":"))
         if check:
             if k not in fields: continue
         ret[k] = v
+    print(ret)
     return ret
 
 def generate_chk(values: list[int, str] = [], key: str = "", salt: str = "") -> str:
@@ -71,6 +73,8 @@ def generate_upload_seed(data: str, chars: int = 50):
     step = len(data) // chars
     return data[::step][:chars]
 
+def generate_rs(n=10):
+    return ("").join(random.choices(possible_letters, k=n))
 #TODO: make this client side so rubrub won't block Render's ip address
 @a.route("/reupload", methods=["POST","GET"])
 def reuplaod():
@@ -91,13 +95,14 @@ def reuplaod():
             body = {"reason": reason}
             code = status
         try:
-            accId = resp2json(requests.post(gdpsMap[dest[0]]+"getGJUsers20.php", data={"secret": "Wmfd2893gb7", "str":dest[1],"total": "0", "page":"0"}, headers={"User-Agent": ""}).text, ["16"]),
             if (target[0] not in gdpsMap or "https" in gdpsMap[target[0]]) or (dest[0] not in gdpsMap or "https" in gdpsMap[dest[0]]):
                 setError("Server not supported or not exist")
             else:
                 # downloadGJLevel22.php now requires rs and chk key so yeah that's my rs and chk
-                resp = resp2json(requests.post(gdpsMap[target[0]]+"downloadGJLevel22.php", data={"secret": "Wmfd2893gb7", "levelID": levelId, "gjp": encode_gjp(target[2]), "rs": "RQNMgw08Tm", "chk": "DAIFAAUDBlZSVQEHAQEBAVAFAwBXCAYOUVYCUAdSUAIGAwcAVwRUDQ==", "gdw": 0}, headers={"User-Agent": ""}).text)
-
+                accId = resp2json(requests.post(gdpsMap[dest[0]]+"getGJUsers20.php", data={"secret": "Wmfd2893gb7", "str":dest[1],"total": "0", "page":"0"}, headers={"User-Agent": ""}).text, ["16"]),
+                accIdTarget = resp2json(requests.post(gdpsMap[target[0]]+"getGJUsers20.php", data={"secret": "Wmfd2893gb7", "str":target[1],"total": "0", "page":"0"}, headers={"User-Agent": ""}).text, ["16"]),
+                rs=generate_rs()
+                resp = resp2json(requests.post(gdpsMap[target[0]]+"downloadGJLevel22.php", data={"secret": "Wmfd2893gb7", "levelID": levelId, "gjp": encode_gjp(target[2]), "rs": rs, "chk": generate_chk([levelId, "1", rs, accIdTarget[0]["16"], "S1521388267807637760849071701082101002", "147699869"], "41274", "xI25fpAapCQg"), "gdw": 0}, headers={"User-Agent": ""}).text)
                 upload = requests.post(gdpsMap[dest[0]]+"uploadGJLevel21.php", {
                     "gameVersion": 21,
                     "accountID": int(accId[0]["16"]),
@@ -105,7 +110,7 @@ def reuplaod():
                     "userName": dest[1],
                     "levelID": 0,
                     "levelName": resp["2"],
-                    "levelDesc": "VGhpcyBsZXZlbCBpcyByZXVwbG9hZGVkIHVzaW5nIGEgYnJhbmQgbmV3IEdEIExldmVsIFJldXBsb2FkZXIgYnR3",#resp["3"],
+                    "levelDesc": resp["3"],
                     "levelVersion": "1",
                     "levelLength": int(resp["15"]),
                     "audioTrack": int(resp["12"]),
